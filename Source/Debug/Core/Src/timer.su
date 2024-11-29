@@ -1,0 +1,6 @@
+../Core/Src/timer.c:15:6:Init_Timer	16	static
+../Core/Src/timer.c:23:6:ignoreTimer	16	static
+../Core/Src/timer.c:27:6:activeTimer	16	static
+../Core/Src/timer.c:31:5:getTimerFlags	16	static
+../Core/Src/timer.c:35:6:setTimer	16	static
+../Core/Src/timer.c:40:6:runTimer	16	static
