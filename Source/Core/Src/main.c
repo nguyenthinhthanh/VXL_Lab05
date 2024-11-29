@@ -22,6 +22,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include "gobal.h"
+#include "command_parser.h"
+#include "uart_communiation.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,9 +48,7 @@ ADC_HandleTypeDef hadc1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-char str[50];
-uint8_t temp = 0;
-uint32_t ADC_value = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,7 +64,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 /* USER CODE BEGIN 0 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	if(huart->Instance == USART2){
-		HAL_UART_Transmit(&huart2, &temp, 1, 100);
+		//HAL_UART_Transmit(&huart2, &temp, 1, 100);
+		buffer[index_buffer++] = temp;
+
+		if(index_buffer >= MAX_BUFFER_SIZE){
+			index_buffer = 0;
+		}
+		buffer_flag = 1;
+
 		HAL_UART_Receive_IT(&huart2, &temp, 1);
 	}
 }
@@ -111,10 +119,16 @@ int main(void)
 
   while (1)
   {
-	  HAL_GPIO_TogglePin(LED_PA5_GPIO_Port, LED_PA5_Pin);
+	  /*HAL_GPIO_TogglePin(LED_PA5_GPIO_Port, LED_PA5_Pin);
 	  ADC_value = HAL_ADC_GetValue(&hadc1);
 	  HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "%lu\n", ADC_value), 1000);
-	  HAL_Delay(500);
+	  HAL_Delay(500);*/
+
+	  if(buffer_flag == 1){
+		  command_parser_fsm();
+		  buffer_flag = 0;
+	  }
+	  uart_communiation_fsm();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
