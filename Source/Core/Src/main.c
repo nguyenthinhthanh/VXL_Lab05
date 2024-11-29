@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +45,9 @@ ADC_HandleTypeDef hadc1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+char str[50];
+uint8_t temp = 0;
+uint32_t ADC_value = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -54,12 +56,17 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	if(huart->Instance == USART2){
+		HAL_UART_Transmit(&huart2, &temp, 1, 100);
+		HAL_UART_Receive_IT(&huart2, &temp, 1);
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -99,8 +106,15 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_ADC_Start(&hadc1);
+  HAL_UART_Receive_IT(&huart2, &temp, 1);
+
   while (1)
   {
+	  HAL_GPIO_TogglePin(LED_PA5_GPIO_Port, LED_PA5_Pin);
+	  ADC_value = HAL_ADC_GetValue(&hadc1);
+	  HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "%lu\n", ADC_value), 1000);
+	  HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
