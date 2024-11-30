@@ -7,7 +7,7 @@
 
 #include "uart_communiation.h"
 
-uint8_t sucess_message[] = "Transmit success\n";
+uint8_t sucess_message[] = "Transmit success, next transmit\n";
 uint8_t fault_message[] = "Fault resend, stop send\n";
 
 uint8_t start = 0;
@@ -52,6 +52,8 @@ void uart_communiation_fsm(void){
 		break;
 	case COMMUNICATE_WAIT_ACK_STATE:
 		if(cmd_flag){
+			//HAL_UART_Transmit(&huart2, sucess_message, sizeof(sucess_message), 1000);
+
 			start = index_start;
 			end = (index_buffer - 1 + MAX_BUFFER_SIZE) % MAX_BUFFER_SIZE;
 
@@ -60,7 +62,7 @@ void uart_communiation_fsm(void){
 			uint8_t lenght = ((end - start + MAX_BUFFER_SIZE) % MAX_BUFFER_SIZE) - 1;
 
 			if(lenght == 2 && buffer[(start + 1) % MAX_BUFFER_SIZE] == 'O'
-					&& buffer[(start + 1) % MAX_BUFFER_SIZE] == 'K'){
+					&& buffer[(start + 2) % MAX_BUFFER_SIZE] == 'K'){
 				ignoreTimer(TIMER_TIME_OUT);
 
 				HAL_UART_Transmit(&huart2, sucess_message, sizeof(sucess_message), 1000);
@@ -86,6 +88,28 @@ void uart_communiation_fsm(void){
 		if(getTimerFlags(TIMER_TIME_OUT)){
 			HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "Resend %lu\n", ADC_value), 1000);
 			setTimer(TIMER_TIME_OUT, 3000);
+		}
+
+		if(cmd_flag){
+			//HAL_UART_Transmit(&huart2, sucess_message, sizeof(sucess_message), 1000);
+
+			start = index_start;
+			end = (index_buffer - 1 + MAX_BUFFER_SIZE) % MAX_BUFFER_SIZE;
+
+			cmd_flag = 0;
+
+			uint8_t lenght = ((end - start + MAX_BUFFER_SIZE) % MAX_BUFFER_SIZE) - 1;
+
+			if(lenght == 2 && buffer[(start + 1) % MAX_BUFFER_SIZE] == 'O'
+					&& buffer[(start + 2) % MAX_BUFFER_SIZE] == 'K'){
+				ignoreTimer(TIMER_TIME_OUT);
+				ignoreTimer(TIMER_RESEND_FAULT);
+
+				HAL_UART_Transmit(&huart2, sucess_message, sizeof(sucess_message), 1000);
+				Communicate_state = COMMUNICATE_IDEL_STATE;
+
+				break;
+			}
 		}
 
 		if(getTimerFlags(TIMER_RESEND_FAULT)){
