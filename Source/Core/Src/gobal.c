@@ -7,10 +7,12 @@
 
 #include "gobal.h"
 
+uint8_t MAX_BUFFER_SIZE = 30;
+
 char str[50];
 
 uint8_t temp = 0;
-uint8_t buffer[MAX_BUFFER_SIZE];
+uint8_t buffer[30];
 uint8_t index_buffer = 0;
 uint8_t index_start = 0;
 uint8_t buffer_flag = 0;

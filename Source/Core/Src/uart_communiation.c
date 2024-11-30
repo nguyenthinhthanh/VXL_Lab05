@@ -7,8 +7,8 @@
 
 #include "uart_communiation.h"
 
-uint8_t sucess_message[] = "Transmit success, next transmit\n";
-uint8_t fault_message[] = "Fault resend, stop send\n";
+uint8_t sucess_message[] = "Transmit success, next transmit\r\n";
+uint8_t fault_message[] = "Fault resend, stop send\r\n";
 
 uint8_t start = 0;
 uint8_t end = 0;
@@ -38,11 +38,14 @@ void uart_communiation_fsm(void){
 				&& buffer[(start + 3) % MAX_BUFFER_SIZE] == 'T'){
 			Communicate_state = COMMUNICATE_SEND_STATE;
 		}
+		else{
+			Communicate_state = COMMUNICATE_IDEL_STATE;
+		}
 
 		break;
 	case COMMUNICATE_SEND_STATE:
 		ADC_value = HAL_ADC_GetValue(&hadc1);
-		HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "%lu\n", ADC_value), 1000);
+		HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "ADC Read is %lu\r\n", ADC_value), 1000);
 
 		setTimer(TIMER_TIME_OUT, 3000);
 		activeTimer(TIMER_TIME_OUT);
@@ -73,7 +76,7 @@ void uart_communiation_fsm(void){
 		}
 
 		if(getTimerFlags(TIMER_TIME_OUT)){
-			HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "Resend %lu\n", ADC_value), 1000);
+			HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "Resend %lu\r\n", ADC_value), 1000);
 
 			setTimer(TIMER_TIME_OUT, 3000);
 
@@ -86,7 +89,7 @@ void uart_communiation_fsm(void){
 		break;
 	case COMMUNICATE_RESEND_STATE:
 		if(getTimerFlags(TIMER_TIME_OUT)){
-			HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "Resend %lu\n", ADC_value), 1000);
+			HAL_UART_Transmit(&huart2, (void *)str, sprintf(str, "Resend %lu\r\n", ADC_value), 1000);
 			setTimer(TIMER_TIME_OUT, 3000);
 		}
 
