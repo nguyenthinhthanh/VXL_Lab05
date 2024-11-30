@@ -11,6 +11,7 @@
 #define MAX_TIMER	3
 
 #define TIMER_TIME_OUT			0		/*3s for timer time out*/
+#define TIMER_RESEND_FAULT		1		/*6s for timer resend fault*/
 
 extern int TIMER_CYCLE;
 

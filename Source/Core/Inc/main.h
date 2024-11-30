@@ -61,7 +61,11 @@ void Error_Handler(void);
 #define LED_PA5_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
+extern ADC_HandleTypeDef hadc1;
 
+extern TIM_HandleTypeDef htim2;
+
+extern UART_HandleTypeDef huart2;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
