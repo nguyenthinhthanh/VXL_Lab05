@@ -7,7 +7,7 @@
 
 #include "gobal.h"
 
-uint8_t MAX_BUFFER_SIZE = 30;
+uint8_t MAX_BUFFER_SIZE = 10;
 
 char str[50];
 
